@@ -64,7 +64,7 @@ class Trainer:
             val_loss, val_acc = self._validate()
 
             print(f"Train Loss: {train_loss:.4f}, Train Acc: {train_acc:.4f}")
-            print(f"Val   Loss: {val_loss:.4f}, Val   Acc: {val_acc:.4f}")
+            print(f"Val Loss: {val_loss:.4f}, Val Acc: {val_acc:.4f}")
 
             if self.scheduler:
                 self.scheduler.step(val_loss)
