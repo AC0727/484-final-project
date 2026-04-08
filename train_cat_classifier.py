@@ -30,7 +30,7 @@ class CatClassifier(nn.Module):
         super().__init__()
 
         weights = ResNet18_Weights.DEFAULT if pretrained else None
-            self.model = resnet18(weights=weights)
+        self.model = resnet18(weights=weights)
 
         if freeze_backbone:
             for param in self.model.parameters():
