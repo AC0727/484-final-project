@@ -3,3 +3,11 @@ data/
 outputs/ 
 __pycache__/ 
 *.pyc 
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.env
+.DS_Store
+checkpoints/
