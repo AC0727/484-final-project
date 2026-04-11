@@ -1,5 +1,5 @@
-from src.datasets import VOCCatBinaryDataset
-from src.transforms import get_image_transform
+from mylibs.datasets import VOCCatBinaryDataset
+from mylibs.transforms import get_image_transform
 
 def main():
     dataset = VOCCatBinaryDataset(
