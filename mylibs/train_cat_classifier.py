@@ -1,6 +1,5 @@
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
 from torchvision.models import (
     resnet18,
     ResNet18_Weights,
@@ -38,24 +37,6 @@ class CatClassifier(nn.Module):
         in_features = self.model.fc.in_features
         self.model.fc = nn.Linear(in_features, 1)
 
-        # storing the gradients for GradCAM
-        self.gradients = None
-        self.activations = None
-
-        # register the hooks needed to track the gradients for GradCAM
-        target_layer = self.model.layer4[-1]
-
-        target_layer.register_forward_hook(self._forward_hook)
-        target_layer.register_full_backward_hook(self._backward_hook)
-
-    def _forward_hook(self, module, input, output):
-        # Save feature maps
-        self.activations = output
-
-    def _backward_hook(self, module, grad_input, grad_output):
-        # Save gradients (grad_output is a tuple)
-        self.gradients = grad_output[0]
-
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         """
         Args:
@@ -81,43 +62,3 @@ class CatClassifier(nn.Module):
         """
         probs = self.predict_probs(x)
         return (probs >= threshold).float()
-
-    def generate_gradcam(self, x: torch.Tensor, upsample: bool = True):
-        """
-        Args:
-            x: shape [B, 3, H, W] where 3 is the number of channels (RGB)
-        Returns:
-            cam: shape [B, 1, H, W]
-        """
-        self.eval()
-
-        # Forward pass
-        logits = self.forward(x) # [B, 1]
-
-        self.zero_grad()
-        logits.backward(torch.ones_like(logits)) # gradients of the 'cat' score
-
-        # Get stored data from the hooks
-        gradients = self.gradients # [B, C, H, W], C is number of feature maps
-        activations = self.activations # [B, C, H, W]
-
-        # Global average pooling on gradients
-        weights = gradients.mean(dim=(2, 3), keepdim=True)  # [B, C, 1, 1]
-
-        # Weighted sum, collapse all feature maps into one heatmap
-        cam = (weights * activations).sum(dim=1, keepdim=True)  # [B, 1, H, W]
-
-        # ReLU, keep only positive contributions to the heatmap
-        cam = torch.relu(cam)
-
-        # Normalize per image
-        B, _, H, W = cam.shape
-        cam = cam.view(B, -1) # flatten to [B, H*W]
-        cam = cam - cam.min(dim=1, keepdim=True)[0]
-        cam = cam / (cam.max(dim=1, keepdim=True)[0] + 1e-8)
-        cam = cam.view(B, 1, H, W) # reshape
-
-        if upsample:
-            cam = F.interpolate(cam, size=x.shape[2:], mode="bilinear", align_corners=False)
-
-        return cam
