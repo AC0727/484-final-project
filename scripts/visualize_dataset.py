@@ -2,8 +2,8 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 import torch
 
-from src.datasets import VOCCatBinaryDataset
-from src.transforms import get_image_transform
+from mylibs.datasets import VOCCatBinaryDataset
+from mylibs.transforms import get_image_transform
 
 def unnormalize(img_tensor):
     """
