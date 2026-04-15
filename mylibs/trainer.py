@@ -86,7 +86,7 @@ class Trainer:
 
         loop = tqdm(self.train_loader, leave=False)
 
-        for images, labels in loop: # for each batch
+        for images, labels, _ in loop: # for each batch
             images = images.to(self.device)
             labels = labels.to(self.device).float().unsqueeze(1) # might have to change this depending on how the dataset is formatted
 
@@ -119,7 +119,7 @@ class Trainer:
         total = 0
 
         with torch.no_grad(): # don't calculate the gradients
-            for images, labels in self.val_loader:
+            for images, labels, _ in self.val_loader:
                 images = images.to(self.device)
                 labels = labels.to(self.device).float().unsqueeze(1) # again, might have to change this
 

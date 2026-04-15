@@ -52,6 +52,9 @@ def visualize_cat_images(dataset, num_cats = 3):
     shown = 0
     i = 0
 
+    if num_cats == 1:
+        axes = [axes]
+
     while shown < num_cats and i < len(dataset):
         image, label, target = dataset[i]
 

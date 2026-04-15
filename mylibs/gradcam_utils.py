@@ -15,7 +15,7 @@ visualize_cam_bbox(image[0], cam, bbox, center)
 
 # NOTE: For this to work properly, cam needs to be upsampled to the original image size
 
-# NOTE: The value of the treshold matters a lot, somehting we can experiment with
+# NOTE: The value of the threshold matters a lot, somehting we can experiment with
 def cam_to_binary_mask(cam: torch.Tensor, threshold: float = 0.5):
     """
     cam: [H, W] or [1, H, W]
@@ -27,6 +27,8 @@ def cam_to_binary_mask(cam: torch.Tensor, threshold: float = 0.5):
     return (cam > threshold).float()
 
 
+# NOTE: This is another way to threshold for the binary mask that is supposedly better, maybe we can compare the different
+# ways to threshold?
 def percentile_threshold_mask(cam: torch.Tensor, percentile=80):
     """
     Keeps the top (100 - percentile)% of pixels in the binary mask
