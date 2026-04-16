@@ -1,5 +1,3 @@
-# cat_classifier.py
-
 import torch
 import torch.nn as nn
 from torchvision.models import (
@@ -18,7 +16,7 @@ class CatClassifier(nn.Module):
         0 -> image does not contain any cats
 
     Output:
-        One logit per image, shape [B, 1]
+        One logit per image, shape [B, 1] where B is for batch size
     """
 
     def __init__(
@@ -45,7 +43,7 @@ class CatClassifier(nn.Module):
             x: image tensor of shape [B, 3, H, W]
 
         Returns:
-            logits: tensor of shape [B, 1]
+            logits: tensor of shape [B, 1], one logit per image
         """
         return self.model(x)
 
