@@ -4,6 +4,11 @@ import torch
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 
+def train_collate_fn(batch):
+    images = torch.stack([item[0] for item in batch], dim=0)
+    labels = torch.stack([item[1] for item in batch], dim=0)
+    targets = [item[2] for item in batch]
+    return images, labels, targets
 
 class Trainer:
     def __init__(
@@ -41,6 +46,7 @@ class Trainer:
             batch_size=batch_size,
             shuffle=True,
             num_workers=num_workers,
+            collate_fn=train_collate_fn,
         )
 
         self.val_loader = DataLoader(
@@ -48,6 +54,7 @@ class Trainer:
             batch_size=batch_size,
             shuffle=False,
             num_workers=num_workers,
+            collate_fn=train_collate_fn,
         )
 
         self.model.to(self.device)

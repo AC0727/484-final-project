@@ -22,7 +22,7 @@ def cam_to_binary_mask(cam: torch.Tensor, threshold: float = 0.5):
     returns: binary mask [H, W]
     """
     if cam.dim() == 3:
-        cam = cam.squeeze(0) # If the dimension is [1, H, W], modify it to [H, W]
+        cam = cam.squeeze(0)  # If the dimension is [1, H, W], modify it to [H, W]
 
     return (cam > threshold).float()
 
@@ -41,7 +41,6 @@ def percentile_threshold_mask(cam: torch.Tensor, percentile=80):
         cam = cam.squeeze(0)
 
     flat = cam.view(-1)
-
     thresh = torch.quantile(flat, percentile / 100.0)
 
     return (cam >= thresh).float()
@@ -52,16 +51,16 @@ def largest_connected_component(binary_mask: torch.Tensor):
     binary_mask: mask [H, W]
     returns: mask with only largest component
     """
-    mask_np = binary_mask.cpu().numpy() # do this on the cpu
+    mask_np = binary_mask.detach().cpu().numpy() 
 
     labeled, num_features = label(mask_np)
 
-    if num_features == 0: # nothing found
-        return binary_mask  
+    if num_features == 0:  # nothing found
+        return binary_mask
 
     largest_label = 1 + np.argmax([
         (labeled == i).sum() for i in range(1, num_features + 1)
-    ]) # the feature with the most labelled pixels
+    ])  # the feature with the most labelled pixels
 
     largest_mask = (labeled == largest_label).astype(np.float32)
 
@@ -127,10 +126,14 @@ def visualize_cam_bbox(image, cam, bbox=None, center=None):
     """
     Visualize the bounding box and centroid on the actual image
     image: [3, H, W]
-    cam: [H, W]
+    cam: [H, W] or [1, H, W]
     """
-    img = image.permute(1, 2, 0).cpu().numpy()
-    cam = cam.cpu().numpy()
+    img = image.permute(1, 2, 0).detach().cpu().numpy()
+
+    if cam.dim() == 3:
+        cam = cam.squeeze(0)
+
+    cam = cam.detach().cpu().numpy()
 
     plt.imshow(img)
     plt.imshow(cam, cmap='jet', alpha=0.5)
@@ -152,5 +155,4 @@ def visualize_cam_bbox(image, cam, bbox=None, center=None):
 
     plt.axis('off')
     plt.show()
-
 
