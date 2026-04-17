@@ -5,11 +5,11 @@ import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
 
-from datasets import VOCCatBinaryDataset
-from transforms import get_val_transform
-from train_cat_classifier import CatClassifier
-from gradcam import GradCAM
-from gradcam_utils import cam_to_bbox_and_center, cam_to_binary_mask
+from .datasets import VOCCatBinaryDataset
+from .transforms import get_image_transform
+from .train_cat_classifier import CatClassifier
+from .gradcam import GradCAM
+from .gradcam_utils import cam_to_bbox_and_center, cam_to_binary_mask
 
 """
 Example Usage:
@@ -20,7 +20,7 @@ dataset = VOCCatBinaryDataset(
     root="./data",
     year="2012",
     image_set="val",
-    transform=get_val_transform(),
+    transform=get_image_transform(),
     download=False,
 )
 
@@ -228,7 +228,7 @@ def main():
         root="./data",
         year="2012",
         image_set="val",
-        transform=get_val_transform(),
+        transform=get_image_transform(),
         download=False,
     )
 
